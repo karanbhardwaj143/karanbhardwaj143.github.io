@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine 💝</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --yesRed: #cc3852;
+      --yesGlow: rgba(204,56,82,.45);
+      --noPink: #cdadad;
+      --card: rgba(255,255,255,.88);
+      --text: #3a3a3a;
+      --muted: #6b6b6b;
+      --shadow: 0 18px 45px rgba(0,0,0,.10);
+      --radius: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height: 100%; margin: 0; }
+    body{
+      font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      background:
+        radial-gradient(1200px 800px at 50% 20%, rgba(255,255,255,.95), rgba(247,247,247,.90)),
+        linear-gradient(#f6f6f6, #f2f2f2);
+      user-select: none;
+    }
+
+    /* Falling hearts */
+    .hearts{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .heart{
+      position: absolute;
+      top: -40px;
+      font-size: 18px;
+      opacity: .85;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.08));
+      animation: fall linear forwards;
+    }
+    @keyframes fall{
+      to{
+        transform: translate3d(var(--dx), 110vh, 0) rotate(var(--rot));
+        opacity: .95;
+      }
+    }
+
+    .stage{
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      z-index: 1;
+    }
+
+    .card{
+      width: min(560px, 92vw);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 34px 26px 28px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: relative;
+    }
+
+    .title{
+      font-family: "Pacifico", cursive;
+      font-size: clamp(30px, 4.3vw, 42px);
+      color: var(--yesRed);
+      text-align: center;
+      margin: 0 0 10px 0;
+    }
+
+    .subtitle{
+      text-align: center;
+      font-size: 15px;
+      color: var(--muted);
+      margin: 0 0 20px 0;
+    }
+
+    .actions{
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 6px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn{
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 12px 26px;
+      font-size: 16px;
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease, opacity .18s ease;
+      will-change: transform;
+    }
+
+    .btn-yes{
+      background: var(--yesRed);
+      color: #fff;
+      box-shadow:
+        0 18px 40px var(--yesGlow),
+        0 10px 20px rgba(204,56,82,.22);
+      animation: heartbeat 1.05s ease-in-out infinite;
+      position: relative;
+    }
+    @keyframes heartbeat{
+      0%, 100% { transform: scale(1); }
+      35%      { transform: scale(1.06); }
+      60%      { transform: scale(0.98); }
+    }
+
+    .yes-huge{
+      padding: 16px 40px;
+      font-size: 20px;
+    }
+
+    .btn-no{
+      background: var(--noPink);
+      color: #7a2f3d;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+    }
+    .btn-no:active{ transform: scale(.98); }
+
+    .bottom-message{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: min(680px, 92vw);
+      text-align: center;
+      font-weight: 600;
+      color: var(--yesRed);
+      text-shadow: 0 8px 20px rgba(0,0,0,.06);
+      z-index: 3;
+      padding: 10px 14px;
+    }
+
+    .floating-no{
+      position: fixed !important;
+      z-index: 9999 !important;
+    }
+
+    /* Final */
+    .final .title{ margin-bottom: 16px; }
+    .photo{
+      width: min(460px, 84vw);
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 0 auto 18px;
+      background: rgba(255,255,255,.65);
+      box-shadow: 0 14px 36px rgba(0,0,0,.12);
+    }
+    .photo img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .final-msg{
+      text-align: center;
+      font-weight: 700;
+      color: var(--yesRed);
+      font-size: 18px;
+      margin: 10px 0 0;
+    }
+    .final-small{
+      text-align: center;
+      color: #6b6b6b;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Confetti canvas */
+    #confetti{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+      display: none;
+    }
+    #confetti.show{ display: block; }
+  </style>
+</head>
+
+<body>
+  <div class="hearts" id="hearts"></div>
+  <canvas id="confetti"></canvas>
+
+  <div class="stage">
+    <div class="card" id="card">
+      <h1 class="title" id="title">Will you be my valentine? 💝</h1>
+      <p class="subtitle" id="subtitle">Choose wisely... 😉</p>
+
+      <div class="actions" id="actions">
+        <button class="btn btn-yes" id="yesBtn" type="button">Yes! 💕</button>
+        <button class="btn btn-no" id="noBtn" type="button">No</button>
+      </div>
+
+      <div id="finalArea" style="display:none;">
+        <div class="photo">
+          <img id="finalPhoto" src="assets/photo.png" alt="Photo">
+        </div>
+
+        <p class="final-msg">
+          Congratulations! You are now officially KARAN's Valentine ❤️<br/>
+          forever and always! 🎉
+        </p>
+        <p class="final-small">
+          (I mean, we both knew you'd say yes eventually 😉)
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-message" id="bottomMsg"></div>
+
+  <script>
+    // ---------- HEARTS ----------
+    const hearts = document.getElementById("hearts");
+    const heartEmojis = ["💗","💖","💘","💝","💕","💞","💓"];
+    let heartTimer = null;
+
+    function spawnHeart(){
+      const el = document.createElement("div");
+      el.className = "heart";
+      el.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+
+      const x = Math.random() * window.innerWidth;
+      const size = 14 + Math.random() * 18;
+      const duration = 7 + Math.random() * 6;
+      const dx = (Math.random() * 90 - 45) + "px";
+      const rot = (Math.random() * 160 - 80) + "deg";
+
+      el.style.left = x + "px";
+      el.style.fontSize = size + "px";
+      el.style.setProperty("--dx", dx);
+      el.style.setProperty("--rot", rot);
+      el.style.animationDuration = duration + "s";
+
+      hearts.appendChild(el);
+      setTimeout(() => el.remove(), duration * 1000 + 300);
+    }
+
+    function setHeartSpeed(ms){
+      clearInterval(heartTimer);
+      heartTimer = setInterval(spawnHeart, ms);
+    }
+    setHeartSpeed(520);
+
+    // ---------- ELEMENTS ----------
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+    const bottomMsg = document.getElementById("bottomMsg");
+
+    const card = document.getElementById("card");
+    const actions = document.getElementById("actions");
+    const finalArea = document.getElementById("finalArea");
+    const title = document.getElementById("title");
+    const subtitle = document.getElementById("subtitle");
+
+    // ---------- STATE ----------
+    let noClicks = 0;
+    let yesUnlocked = false;
+
+    const msg2 = "Nice try! But clicking won't help you 😈";
+    const msg3 = "Still trying to click 'No'? That's adorable! 🥰";
+    const msg4 = "You're persistent, I'll give you that! But the answer is YES! 💖";
+    const msg5 = "Really? You're gonna make me work for this? 😘";
+
+    bottomMsg.textContent = "";
+
+    yesBtn.addEventListener("click", () => {
+      if (!yesUnlocked) return;
+      goFinal();
+    });
+
+    noBtn.addEventListener("click", () => {
+      noClicks++;
+
+      if (noClicks === 1){
+        bottomMsg.textContent = msg2;
+        startFloatingNo();
+        moveNoInRingAroundCard();
+      } else if (noClicks === 2){
+        bottomMsg.textContent = msg3;
+        moveNoInRingAroundCard();
+      } else if (noClicks === 3){
+        bottomMsg.textContent = msg4;
+        yesBtn.classList.add("yes-huge");
+        yesBtn.textContent = "YES! 💞 (Getting warmer...)";
+        moveNoInRingAroundCard();
+      } else if (noClicks === 4){
+        bottomMsg.textContent = msg5;
+        noBtn.style.display = "none";
+        yesUnlocked = true;
+
+        yesBtn.classList.add("yes-huge");
+        yesBtn.textContent = "YES! 💞 (Getting warmer...)";
+        yesBtn.style.cursor = "pointer";
+      }
+    });
+
+    function startFloatingNo(){
+      if (noBtn.parentElement !== document.body) {
+        document.body.appendChild(noBtn);
+      }
+      noBtn.classList.add("floating-no");
+      noBtn.style.margin = "0";
+      noBtn.style.transform = "none";
+      noBtn.style.right = "auto";
+      noBtn.style.bottom = "auto";
+    }
+
+    // ✅ Random around the card (above/sides/below) but still close and visible.
+    function moveNoInRingAroundCard(){
+      startFloatingNo();
+
+      const btnRect = noBtn.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+
+      // Outer "close" area around the card (tweak these)
+      const outerMarginX = 220;
+      const outerMarginY = 180;
+
+      // Inner padding around the card to avoid landing too close on top of it
+      const innerPad = 10;
+
+      // Outer bounds
+      let outerLeft   = cardRect.left   - outerMarginX;
+      let outerRight  = cardRect.right  + outerMarginX;
+      let outerTop    = cardRect.top    - outerMarginY;
+      let outerBottom = cardRect.bottom + outerMarginY;
+
+      // Clamp outer bounds to viewport
+      outerLeft   = Math.max(10, outerLeft);
+      outerTop    = Math.max(10, outerTop);
+      outerRight  = Math.min(window.innerWidth  - 10, outerRight);
+      outerBottom = Math.min(window.innerHeight - 10, outerBottom);
+
+      // Inner bounds (card + padding)
+      const innerLeft   = cardRect.left   - innerPad;
+      const innerRight  = cardRect.right  + innerPad;
+      const innerTop    = cardRect.top    - innerPad;
+      const innerBottom = cardRect.bottom + innerPad;
+
+      // Convert to valid top-left ranges for button
+      const maxX = outerRight  - btnRect.width;
+      const maxY = outerBottom - btnRect.height;
+
+      // If screen is small, fallback directly below card
+      if (maxX <= outerLeft || maxY <= outerTop){
+        noBtn.style.left = (cardRect.left + cardRect.width/2 - btnRect.width/2) + "px";
+        noBtn.style.top  = (cardRect.bottom + 12) + "px";
+        return;
+      }
+
+      // Pick random point in outer rect but NOT inside inner rect
+      for (let i = 0; i < 120; i++){
+        const x = outerLeft + Math.random() * (maxX - outerLeft);
+        const y = outerTop  + Math.random() * (maxY - outerTop);
+
+        // Reject points that fall inside the inner (card) area
+        const insideInner =
+          x + btnRect.width  > innerLeft &&
+          x < innerRight &&
+          y + btnRect.height > innerTop &&
+          y < innerBottom;
+
+        if (!insideInner){
+          noBtn.style.left = x + "px";
+          noBtn.style.top  = y + "px";
+          return;
+        }
+      }
+
+      // Fallback: put it near bottom-left of the card but still outside
+      noBtn.style.left = Math.max(10, (cardRect.left - btnRect.width - 14)) + "px";
+      noBtn.style.top  = Math.min(window.innerHeight - btnRect.height - 10, cardRect.bottom + 14) + "px";
+    }
+
+    window.addEventListener("resize", () => {
+      if (noBtn.classList.contains("floating-no") && noBtn.style.display !== "none"){
+        moveNoInRingAroundCard();
+      }
+    });
+
+    // ---------- CONFETTI (5s only) ----------
+    const confettiCanvas = document.getElementById("confetti");
+    const ctx = confettiCanvas.getContext("2d");
+
+    function resizeConfetti(){
+      confettiCanvas.width = window.innerWidth * devicePixelRatio;
+      confettiCanvas.height = window.innerHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    let confettiPieces = [];
+    let confettiRunning = false;
+    let confettiRAF = null;
+    let confettiStopTimer = null;
+
+    function makeConfetti(){
+      confettiPieces = Array.from({length: 220}, () => ({
+        x: Math.random() * window.innerWidth,
+        y: -20 - Math.random() * 200,
+        w: 6 + Math.random() * 6,
+        h: 10 + Math.random() * 10,
+        vx: -2 + Math.random() * 4,
+        vy: 4 + Math.random() * 7,
+        r: Math.random() * Math.PI,
+        vr: -0.14 + Math.random() * 0.28,
+        a: 0.75 + Math.random() * 0.25
+      }));
+    }
+
+    function drawConfetti(){
+      if (!confettiRunning) return;
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+
+      for (const p of confettiPieces){
+        p.x += p.vx;
+        p.y += p.vy;
+        p.r += p.vr;
+
+        ctx.save();
+        ctx.globalAlpha = p.a;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.r);
+
+        const hue = 330 + Math.random() * 40;
+        ctx.fillStyle = `hsl(${hue}, 80%, 65%)`;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+
+        ctx.restore();
+      }
+      confettiRAF = requestAnimationFrame(drawConfetti);
+    }
+
+    function stopConfetti(){
+      confettiRunning = false;
+      if (confettiRAF) cancelAnimationFrame(confettiRAF);
+      confettiRAF = null;
+      confettiCanvas.classList.remove("show");
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+    }
+
+    function startConfettiFor(ms){
+      stopConfetti();
+      confettiCanvas.classList.add("show");
+      confettiRunning = true;
+      makeConfetti();
+      drawConfetti();
+
+      if (confettiStopTimer) clearTimeout(confettiStopTimer);
+      confettiStopTimer = setTimeout(() => stopConfetti(), ms);
+    }
+
+    function goFinal(){
+      title.textContent = "I knew it! 🎉";
+      subtitle.style.display = "none";
+      actions.style.display = "none";
+      finalArea.style.display = "block";
+      card.classList.add("final");
+
+      startConfettiFor(5000);
+      bottomMsg.textContent = "";
+    }
+  </script>
+</body>
+</html>
